@@ -1,6 +1,6 @@
 {
   "name": "markscript-uservices",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deploy remote proxies of uServices from Marklogic",
   "main": "dist/lib/index.js",
   "repository": "christyharagan/markscript-uservices",
