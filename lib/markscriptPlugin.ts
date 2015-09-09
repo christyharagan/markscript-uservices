@@ -1,4 +1,4 @@
-import * as ms from 'markscript'
+import * as ms from 'markscript-core'
 import * as g from './generator'
 import * as m from './model'
 import * as u from 'uservices'

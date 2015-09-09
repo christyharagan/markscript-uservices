@@ -35,7 +35,7 @@
         "./typings/es6/es6.d.ts",
         "./typings/node/node.d.ts",
         "./typings/tsd.d.ts",
-        "./node_modules/markscript/markscript.d.ts",
+        "./node_modules/markscript-core/markscript.d.ts",
         "./node_modules/ml-admin/ml-admin.d.ts",
         "./node_modules/ml-typescript-definitions/client.d.ts",
         "./node_modules/ml-typescript-definitions/server.d.ts",

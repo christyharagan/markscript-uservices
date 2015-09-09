@@ -1,5 +1,5 @@
 import * as u from 'uservices'
-import * as ms from 'markscript'
+import * as ms from 'markscript-core'
 
 export interface MethodOptions {
   method: METHOD

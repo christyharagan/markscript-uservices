@@ -16,6 +16,19 @@ npm install markscript-uservices
 
 Basic Usage:
 
+To use this as part of a MarkScript build, add this property to the root of your build options:
+
+```TypeScript
+import {UServicesPlugin} from 'markscript-uservices'
+
+let buildOptions = {
+  plugins: {
+    uservices: [UServicesPlugin, {}]
+  }
+  // etc
+}
+```
+
 For a uService on Marklogic:
 
 ```TypeScript

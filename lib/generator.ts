@@ -4,7 +4,7 @@ import * as u from 'uservices'
 import * as m from './model'
 import * as path from 'path'
 import * as fs from 'fs'
-import * as ms from 'markscript'
+import * as ms from 'markscript-core'
 
 export function generateServiceSpecs(modules: s.Map<s.Module>): m.MLServices {
   return u.generateServiceSpecs(
