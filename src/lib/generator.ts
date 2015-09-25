@@ -1,4 +1,4 @@
-import * as s from 'typescript-schema'
+import {reflective as s, KeyValue, expressionToLiteral, containerToString} from 'typescript-schema'
 import * as p from 'typescript-package'
 import * as u from 'uservices'
 import * as m from './model'
@@ -6,7 +6,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as ms from 'markscript-core'
 
-export function generateServiceSpecs(modules: s.Map<s.Module>): m.MLServices {
+export function generateServiceSpecs(modules: KeyValue<s.Module>): m.MLServices {
   return u.generateServiceSpecs(
     modules,
     function(decorator: s.Decorator<s.ClassConstructor>) {
@@ -38,7 +38,7 @@ export function generateServiceSpecs(modules: s.Map<s.Module>): m.MLServices {
           return decorator.decoratorType.name === 'mlEvent' && decorator.decoratorType.parent.name === 'markscript-uservices/dist/lib/decorators'
         })[0]
         if (mlEvent) {
-          let eventOptions = <m.EventOptions>s.expressionToLiteral(mlEvent.parameters[0])
+          let eventOptions = <m.EventOptions>expressionToLiteral(mlEvent.parameters[0])
           if (eventOptions) {
             event.states = eventOptions.states
             event.scope = eventOptions.scope
@@ -86,7 +86,7 @@ export function generateAssetModel(serviceSpecs: m.MLServices, baseUri: string, 
         ms.addModules(assetModel, pkgDir, [modulePath])
       } else if (serviceSpec.type) {
         let cc = <s.ClassConstructor>serviceSpec.type
-        moduleName = '/' + s.typeContainerToString(cc.parent).replace(/:/g, '/')
+        moduleName = '/' + containerToString(cc.parent).replace(/:/g, '/')
         className = cc.name
       } else {
         throw new Error('To generate the service spec assets, either an implementation or type model must be provided, for service: ' + serviceSpec.name)
