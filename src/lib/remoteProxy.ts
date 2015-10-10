@@ -1,7 +1,6 @@
-import {Client} from 'marklogic'
+import {DatabaseClient, ResultProvider} from 'marklogic'
 import * as u from 'uservices'
 import * as m from './model'
-import {createOperation, startRequest, Options} from 'marklogic/lib/mlrest'
 
 export interface Server {
   get(path: string): u.Observable<any>
@@ -13,28 +12,24 @@ export interface Server {
   del(path: string): u.Observable<any>
 }
 
-export function createRemoteProxy<T>(service: m.MLService, client: Client, server: Server): T {
+export function createRemoteProxy<T>(service: m.MLService, client: DatabaseClient, server: Server): T {
   let proxy: any = {}
   u.visitService(service, {
     onMethod: function(method) {
       proxy[method.name] = function(...args: any[]) {
-        let options: Options = {
-          method: m.methodToString((<m.MLMethod>method).method),
-          path: '/v1/resources/' + service.name + '-' + method.name,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+        return new Promise(function(resolve, reject){
+          let resultProvider:ResultProvider<any>
+          switch (m.methodToString((<m.MLMethod>method).method)) {
+            // case 'GET':
+            // case 'DELETE':
+            case 'PUT':
+              resultProvider = client.resources.put(service.name + '-' + method.name, {}, JSON.stringify(args))
+              break
+            case 'POST':
+              resultProvider = client.resources.post(service.name + '-' + method.name, {}, JSON.stringify(args))
+              break
           }
-        }
-        Object.keys(client.connectionParams).forEach(function(key) {
-          options[key] = client.connectionParams[key]
-        })
-        let operation = createOperation(service.name + '-' + method.name, client, options, 'single', 'single')
-
-        operation.requestBody = JSON.stringify(args)
-
-        return <Promise<string>>new Promise(function(resolve, reject) {
-          startRequest(operation).result(function(value) {
+          resultProvider.result(function(value) {
             if (Array.isArray(value)) {
               resolve(value.map(function(v) {
                 return v.content
@@ -42,10 +37,7 @@ export function createRemoteProxy<T>(service: m.MLService, client: Client, serve
             } else {
               resolve(value)
             }
-          }).catch(function(e) {
-            console.log(e.stack)
-            reject(e)
-          })
+          }, reject)
         })
       }
     },

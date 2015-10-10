@@ -2,14 +2,14 @@ import {Observable, Observer, Disposable, Subject} from 'uservices'
 
 export interface Doc<T> {
   uri: string
-  content: cts.DocumentNode<T>
+  content: DocumentNode<T>
 }
 
 export function resolve<T>(value: T): Promise<T> {
   return new BasicPromise(value)
 }
 
-export function resolveIterator<T>(valueIterator: cts.ValueIterator<T>): Promise<T[]> {
+export function resolveIterator<T>(valueIterator: ValueIterator<T>): Promise<T[]> {
   return <any>new BasicPromise(valueIterator)
 }
 
@@ -187,28 +187,29 @@ export class BasicPromise<T> implements Promise<T> {
 }
 
 export class RemoteProxy {
-  constructor(uri: string, options: xdmp.HttpOptions) {
+  constructor(uri: string, options: {[key:string]:string}) {
     this.uri = uri
     this.options = options || {}
   }
 
   private uri: string
-  private options: xdmp.HttpOptions
+  private options: {[key:string]:string}
 
   invokeMethod<T>(methodName, ...args: any[]): Promise<T> {
     let ret = xdmp.httpPost(this.uri + '-' + methodName, this.options, args).toArray()
+    let status = <MLNodeAndObject<{code:number, message:string}>>ret[0]
 
-    if (ret[0].code === 200) {
+    if (status.code === 200) {
       let value = ret[1].toObject()
       return resolve(value)
     } else {
-      return reject(ret[0].message)
+      return reject(status.message)
     }
   }
 }
 
 export class HttpObserver implements Observer<any> {
-  constructor(uri: string, options: xdmp.HttpOptions) {
+  constructor(uri: string, options: {[key:string]:string}) {
     this.uri = uri
     if (this.uri.indexOf('://') === -1) {
       this.uri = 'http://' + this.uri
@@ -217,7 +218,7 @@ export class HttpObserver implements Observer<any> {
   }
 
   private uri: string
-  private options: xdmp.HttpOptions
+  private options: {[key:string]:string}
 
   onNext(value: any): void {
     xdmp.httpPost(this.uri, this.options, { value: value })

@@ -1,10 +1,10 @@
 import { Observable, Observer, Disposable, Subject } from 'uservices';
 export interface Doc<T> {
     uri: string;
-    content: cts.DocumentNode<T>;
+    content: DocumentNode<T>;
 }
 export declare function resolve<T>(value: T): Promise<T>;
-export declare function resolveIterator<T>(valueIterator: cts.ValueIterator<T>): Promise<T[]>;
+export declare function resolveIterator<T>(valueIterator: ValueIterator<T>): Promise<T[]>;
 export declare function reject(error: any): Promise<any>;
 export declare class AbstractMLService {
     constructor();
@@ -32,13 +32,17 @@ export declare class BasicPromise<T> implements Promise<T> {
     catch(onrejected?: (reason: any) => T | Promise<T>): Promise<T>;
 }
 export declare class RemoteProxy {
-    constructor(uri: string, options: xdmp.HttpOptions);
+    constructor(uri: string, options: {
+        [key: string]: string;
+    });
     private uri;
     private options;
     invokeMethod<T>(methodName: any, ...args: any[]): Promise<T>;
 }
 export declare class HttpObserver implements Observer<any> {
-    constructor(uri: string, options: xdmp.HttpOptions);
+    constructor(uri: string, options: {
+        [key: string]: string;
+    });
     private uri;
     private options;
     onNext(value: any): void;
