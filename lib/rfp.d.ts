@@ -15,16 +15,12 @@ export interface Subject<T> extends Observer<T>, Observable<T> {
 export interface Disposable {
     dispose(): void;
 }
-export interface Doc<T> {
-    uri: string;
-    content: DocumentNode<T>;
-}
 export declare function resolve<T>(value: T): Promise<T>;
 export declare function resolveIterator<T>(valueIterator: ValueIterator<T>): Promise<T[]>;
 export declare function reject(error: any): Promise<any>;
 export declare class AbstractMLService {
     constructor();
-    observableFactory: <T>() => Observable<Doc<T>>;
+    observableFactory: <T>() => Observable<DocumentNode<T>>;
 }
 export declare class BasicSubject<T> implements Subject<T>, Disposable {
     private observers;

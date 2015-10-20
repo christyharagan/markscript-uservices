@@ -21,11 +21,6 @@ export interface Disposable {
   dispose(): void;
 }
 
-export interface Doc<T> {
-  uri: string
-  content: DocumentNode<T>
-}
-
 export function resolve<T>(value: T): Promise<T> {
   return new BasicPromise(value)
 }
@@ -45,7 +40,7 @@ export class AbstractMLService {
     }
   }
 
-  observableFactory: <T>() => Observable<Doc<T>>
+  observableFactory: <T>() => Observable<DocumentNode<T>>
 }
 
 export class BasicSubject<T> implements Subject<T>, Disposable {
