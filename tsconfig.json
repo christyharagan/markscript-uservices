@@ -7,21 +7,27 @@
         "sourceMap": true,
         "sourceRoot": ".",
         "outDir": ".",
-        "moduleResolution": "node"
+        "moduleResolution": "classic"
     },
     "formatCodeOptions": {
         "indentSize": 2,
         "tabSize": 2
     },
     "compileOnSave": true,
-    "exclude": [
-        "node_modules/marklogic-node-typescript-definitions/typings",
-        "node_modules/marklogic",
-        "node_modules/markscript-core",
-        "node_modules/ml-admin",
-        "node_modules/typescript",
-        "node_modules/typescript-package",
-        "node_modules/typescript-schema",
-        "node_modules/uservices"
-    ]
+    "filesGlob": [
+        "src/**/*.ts",
+        "typings/**/*.d.ts",
+        "node_modules/markscript-core/model.d.ts",
+        "node_modules/marklogic-typescript-definitions/ts/index.d.ts"
+    ],
+    "files": [
+        "src/lib/decorators.ts",
+        "src/lib/index.ts",
+        "src/lib/localProxy.ts",
+        "src/lib/rfp.ts",
+        "typings/promise/promise.d.ts",
+        "node_modules/markscript-core/model.d.ts",
+        "node_modules/marklogic-typescript-definitions/ts/index.d.ts"
+    ],
+    "exclude": []
 }
