@@ -40,7 +40,7 @@ export class AbstractMLService {
     }
   }
 
-  observableFactory: <T>() => Observable<DocumentNode<T>>
+  observableFactory: <T>() => Observable<{uri:string, content:DocumentNode<T>}>
 }
 
 export class BasicSubject<T> implements Subject<T>, Disposable {

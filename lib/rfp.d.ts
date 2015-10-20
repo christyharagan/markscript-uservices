@@ -20,7 +20,10 @@ export declare function resolveIterator<T>(valueIterator: ValueIterator<T>): Pro
 export declare function reject(error: any): Promise<any>;
 export declare class AbstractMLService {
     constructor();
-    observableFactory: <T>() => Observable<DocumentNode<T>>;
+    observableFactory: <T>() => Observable<{
+        uri: string;
+        content: DocumentNode<T>;
+    }>;
 }
 export declare class BasicSubject<T> implements Subject<T>, Disposable {
     private observers;
