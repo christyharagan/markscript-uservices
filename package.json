@@ -1,6 +1,6 @@
 {
   "name": "markscript-uservices",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "The runtime library to deploy remote proxies of uServices from and to Marklogic",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

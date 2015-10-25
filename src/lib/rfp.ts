@@ -17,6 +17,11 @@ export interface Observable<T> {
 export interface Subject<T> extends Observer<T>, Observable<T> {
 }
 
+export interface Doc<T> {
+  uri:string,
+  content:DocumentNode<T>
+}
+
 export interface Disposable {
   dispose(): void;
 }
@@ -40,7 +45,7 @@ export class AbstractMLService {
     }
   }
 
-  observableFactory: <T>() => Observable<{uri:string, content:DocumentNode<T>}>
+  observableFactory: <T>() => Observable<Doc<T>>
 }
 
 export class BasicSubject<T> implements Subject<T>, Disposable {
