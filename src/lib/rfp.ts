@@ -1,30 +1,4 @@
-export interface Observer<T> {
-  onNext(value: T): void;
-  onError(exception: any): void;
-  onCompleted(): void;
-}
-
-export interface Observable<T> {
-  subscribe(observer: Observer<T>): Disposable
-
-  subscribeOnNext(onNext: (value: T) => void, thisArg?: any): Disposable
-  subscribeOnError(onError: (exception: any) => void, thisArg?: any): Disposable
-  subscribeOnCompleted(onCompleted: () => void, thisArg?: any): Disposable
-
-  map<TResult>(selector: (value: T, index: number, source: Observable<T>) => TResult, thisArg?: any): Observable<TResult>
-}
-
-export interface Subject<T> extends Observer<T>, Observable<T> {
-}
-
-export interface Doc<T> {
-  uri:string,
-  content:DocumentNode<T>
-}
-
-export interface Disposable {
-  dispose(): void;
-}
+export type Doc<T> = MarkScriptUServices.Doc<T>
 
 export function resolve<T>(value: T): Promise<T> {
   return new BasicPromise(value)
@@ -48,104 +22,73 @@ export class AbstractMLService {
   observableFactory: <T>() => Observable<Doc<T>>
 }
 
-export class BasicSubject<T> implements Subject<T>, Disposable {
+export class BasicSubject<T> implements Observer<T>, Observable<T> {
   private observers: Observer<T>[] = []
   private index: number = 0
-  private disposed: boolean = false
+  private unsubscribed: boolean = false
 
-  map<TResult>(selector: (value: T, index: number, source: Observable<T>) => TResult, thisArg?: any): Observable<TResult> {
+  map<TResult>(selector: (value: T) => TResult): Observable<TResult> {
     let observable = new BasicSubject<TResult>()
     let self = this
 
     // TODO: This is very hacky... but wait until RX 3 for proper solution
-    let onNext = observable.onNext
-    let onError = observable.onError
-    let onCompleted = observable.onCompleted
+    let onNext = observable.next
+    let onError = observable.error
+    let onCompleted = observable.complete
 
     this.subscribe({
-      onNext(value: T): void {
-        onNext.call(observable, selector(value, this.index++, self))
+      next(value: T): void {
+        onNext.call(observable, selector(value))
       },
-      onError(exception: any): void {
+      error(exception: any): void {
         onError.call(observable, exception)
       },
-      onCompleted(): void {
+      complete(): void {
         onCompleted.call(observable)
       }
     })
 
-    observable.onNext = this.onNext.bind(this)
-    observable.onError = this.onError.bind(this)
-    observable.onCompleted = this.onCompleted.bind(this)
+    observable.next = this.next.bind(this)
+    observable.error = this.error.bind(this)
+    observable.complete = this.complete.bind(this)
 
     return observable
   }
 
-  onNext(value: T) {
-    if (!this.disposed) {
+  next(value: T) {
+    if (!this.unsubscribed) {
       this.observers.forEach(function(observer) {
-        observer.onNext(value)
+        observer.next(value)
       })
     }
   }
 
-  onError(e) {
-    if (!this.disposed) {
+  error(e) {
+    if (!this.unsubscribed) {
       this.observers.forEach(function(observer) {
-        observer.onError(e)
+        observer.error(e)
       })
     }
   }
 
-  onCompleted() {
-    if (!this.disposed) {
+  complete() {
+    if (!this.unsubscribed) {
       this.observers.forEach(function(observer) {
-        observer.onCompleted()
+        observer.complete()
       })
     }
   }
 
-  dispose(): void {
-    this.disposed = true
-    this.observers = []
-  }
-
-  subscribe(observer: Observer<T>): Disposable {
-    if (!this.disposed) {
+  subscribe(observer: Observer<T>): ()=>void {
+    if (!this.unsubscribed) {
       this.observers.push(observer)
     }
-    return this
-  }
 
-  subscribeOnNext(onNext: (value: T) => void, thisArg?: any): Disposable {
-    if (!this.disposed) {
-      this.observers.push({
-        onNext: onNext.bind(thisArg),
-        onError: function(e) { },
-        onCompleted: function() { }
-      })
+    let self = this
+    return function() {
+      self.unsubscribed = true
+      self.observers = []
     }
-    return this
-  }
-  subscribeOnError(onError: (exception: any) => void, thisArg?: any): Disposable {
-    if (!this.disposed) {
-      this.observers.push({
-        onNext: function(value) { },
-        onError: onError.bind(thisArg),
-        onCompleted: function() { }
-      })
-    }
-    return this
-  }
-  subscribeOnCompleted(onCompleted: () => void, thisArg?: any): Disposable {
-    if (!this.disposed) {
-      this.observers.push({
-        onNext: function(value) { },
-        onError: function(e) { },
-        onCompleted: onCompleted.bind(thisArg)
-      })
-    }
-    return this
   }
 }
 
@@ -241,12 +184,12 @@ export class HttpObserver implements Observer<any> {
   private uri: string
   private options: {[key:string]:string}
 
-  onNext(value: any): void {
+  next(value: any): void {
     xdmp.httpPost(this.uri, this.options, { value: value })
   }
-  onError(exception: any): void {
+  error(exception: any): void {
     xdmp.httpPost(this.uri, this.options, { error: exception })
   }
-  onCompleted(): void {
+  complete(): void {
   }
 }

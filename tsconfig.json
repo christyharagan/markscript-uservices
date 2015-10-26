@@ -15,12 +15,14 @@
     },
     "compileOnSave": true,
     "filesGlob": [
+        "model.d.ts",
         "src/**/*.ts",
         "typings/**/*.d.ts",
         "node_modules/markscript-core/model.d.ts",
         "node_modules/marklogic-typescript-definitions/ts/index.d.ts"
     ],
     "files": [
+        "model.d.ts",
         "src/lib/decorators.ts",
         "src/lib/index.ts",
         "src/lib/localProxy.ts",

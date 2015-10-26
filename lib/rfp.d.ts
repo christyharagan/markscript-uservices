@@ -1,24 +1,4 @@
-export interface Observer<T> {
-    onNext(value: T): void;
-    onError(exception: any): void;
-    onCompleted(): void;
-}
-export interface Observable<T> {
-    subscribe(observer: Observer<T>): Disposable;
-    subscribeOnNext(onNext: (value: T) => void, thisArg?: any): Disposable;
-    subscribeOnError(onError: (exception: any) => void, thisArg?: any): Disposable;
-    subscribeOnCompleted(onCompleted: () => void, thisArg?: any): Disposable;
-    map<TResult>(selector: (value: T, index: number, source: Observable<T>) => TResult, thisArg?: any): Observable<TResult>;
-}
-export interface Subject<T> extends Observer<T>, Observable<T> {
-}
-export interface Doc<T> {
-    uri: string;
-    content: DocumentNode<T>;
-}
-export interface Disposable {
-    dispose(): void;
-}
+export declare type Doc<T> = MarkScriptUServices.Doc<T>;
 export declare function resolve<T>(value: T): Promise<T>;
 export declare function resolveIterator<T>(valueIterator: ValueIterator<T>): Promise<T[]>;
 export declare function reject(error: any): Promise<any>;
@@ -26,19 +6,15 @@ export declare class AbstractMLService {
     constructor();
     observableFactory: <T>() => Observable<Doc<T>>;
 }
-export declare class BasicSubject<T> implements Subject<T>, Disposable {
+export declare class BasicSubject<T> implements Observer<T>, Observable<T> {
     private observers;
     private index;
-    private disposed;
-    map<TResult>(selector: (value: T, index: number, source: Observable<T>) => TResult, thisArg?: any): Observable<TResult>;
-    onNext(value: T): void;
-    onError(e: any): void;
-    onCompleted(): void;
-    dispose(): void;
-    subscribe(observer: Observer<T>): Disposable;
-    subscribeOnNext(onNext: (value: T) => void, thisArg?: any): Disposable;
-    subscribeOnError(onError: (exception: any) => void, thisArg?: any): Disposable;
-    subscribeOnCompleted(onCompleted: () => void, thisArg?: any): Disposable;
+    private unsubscribed;
+    map<TResult>(selector: (value: T) => TResult): Observable<TResult>;
+    next(value: T): void;
+    error(e: any): void;
+    complete(): void;
+    subscribe(observer: Observer<T>): () => void;
 }
 export declare class BasicPromise<T> implements Promise<T> {
     private value;
@@ -61,7 +37,7 @@ export declare class HttpObserver implements Observer<any> {
     });
     private uri;
     private options;
-    onNext(value: any): void;
-    onError(exception: any): void;
-    onCompleted(): void;
+    next(value: any): void;
+    error(exception: any): void;
+    complete(): void;
 }
