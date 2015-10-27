@@ -1,4 +1,7 @@
-export type Doc<T> = MarkScriptUServices.Doc<T>
+export interface Doc<T> {
+  uri: string,
+  content: DocumentNode<T>
+}
 
 export function resolve<T>(value: T): Promise<T> {
   return new BasicPromise(value)
@@ -79,7 +82,7 @@ export class BasicSubject<T> implements Observer<T>, Observable<T> {
     }
   }
 
-  subscribe(observer: Observer<T>): ()=>void {
+  subscribe(observer: Observer<T>): () => void {
     if (!this.unsubscribed) {
       this.observers.push(observer)
     }
@@ -151,17 +154,17 @@ export class BasicPromise<T> implements Promise<T> {
 }
 
 export class RemoteProxy {
-  constructor(uri: string, options: {[key:string]:string}) {
+  constructor(uri: string, options: { [key: string]: string }) {
     this.uri = uri
     this.options = options || {}
   }
 
   private uri: string
-  private options: {[key:string]:string}
+  private options: { [key: string]: string }
 
   invokeMethod<T>(methodName, ...args: any[]): Promise<T> {
     let ret = xdmp.httpPost(this.uri + '-' + methodName, this.options, args).toArray()
-    let status = <MLNodeAndObject<{code:number, message:string}>>ret[0]
+    let status = <MLNodeAndObject<{ code: number, message: string }>>ret[0]
 
     if (status.code === 200) {
       let value = ret[1].toObject()
@@ -173,7 +176,7 @@ export class RemoteProxy {
 }
 
 export class HttpObserver implements Observer<any> {
-  constructor(uri: string, options: {[key:string]:string}) {
+  constructor(uri: string, options: { [key: string]: string }) {
     this.uri = uri
     if (this.uri.indexOf('://') === -1) {
       this.uri = 'http://' + this.uri
@@ -182,7 +185,7 @@ export class HttpObserver implements Observer<any> {
   }
 
   private uri: string
-  private options: {[key:string]:string}
+  private options: { [key: string]: string }
 
   next(value: any): void {
     xdmp.httpPost(this.uri, this.options, { value: value })

@@ -35,10 +35,3 @@ declare interface Observable<T> {
   // filter(callback: (T) => boolean): Observable<T>
   map<U>(callback: (T) => U): Observable<U>
 }
-
-declare module MarkScriptUServices {
-  interface Doc<T> {
-    uri: string,
-    content: DocumentNode<T>
-  }
-}

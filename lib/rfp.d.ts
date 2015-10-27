@@ -1,4 +1,7 @@
-export declare type Doc<T> = MarkScriptUServices.Doc<T>;
+export interface Doc<T> {
+    uri: string;
+    content: DocumentNode<T>;
+}
 export declare function resolve<T>(value: T): Promise<T>;
 export declare function resolveIterator<T>(valueIterator: ValueIterator<T>): Promise<T[]>;
 export declare function reject(error: any): Promise<any>;
