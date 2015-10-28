@@ -24,6 +24,7 @@ export declare class BasicPromise<T> implements Promise<T> {
     private error;
     constructor(value: T, error?: any);
     then<TResult>(onfulfilled?: (value: T) => TResult | Promise<TResult>, onrejected?: (reason: any) => TResult | Promise<TResult>): Promise<TResult>;
+    _then<TResult>(onfulfilled?: (value: T) => TResult | Promise<TResult>, onrejected?: (reason: any) => TResult | Promise<TResult>, convertArrays?: boolean): Promise<TResult>;
     catch(onrejected?: (reason: any) => T | Promise<T>): Promise<T>;
 }
 export declare class RemoteProxy {

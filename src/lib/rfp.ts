@@ -106,10 +106,29 @@ export class BasicPromise<T> implements Promise<T> {
     this.error = error
   }
   then<TResult>(onfulfilled?: (value: T) => TResult | Promise<TResult>, onrejected?: (reason: any) => TResult | Promise<TResult>): Promise<TResult> {
+    return this._then(onfulfilled, onrejected, true)
+  }
+  _then<TResult>(onfulfilled?: (value: T) => TResult | Promise<TResult>, onrejected?: (reason: any) => TResult | Promise<TResult>, convertArrays?: boolean): Promise<TResult> {
     try {
       if (this.value !== undefined) {
         if (onfulfilled) {
-          let ret = onfulfilled(this.value)
+          let value = this.value
+          if (convertArrays && value instanceof ValueIterator) {
+            // TODO: This is an imperfect "hack", to be honest. It's here to make MarkScript uServices work as expected (and fit the type
+            // system). Im not sure of the right approach in a purely javascript land, although once typescript-templates is working, we
+            // could do type analysis to perform better code conversion (i.e.: change the user's code, not the value)
+            value = <any>(<ValueIterator<any>><any>value).toArray().map(function(obj){
+              if (obj.root && obj.root.toObject) {
+                return obj.root.toObject()
+              } else if (obj.toObject) {
+                return obj.toObject()
+              } else {
+                return obj
+              }
+            })
+          }
+
+          let ret = onfulfilled(value)
           if (ret && (<Promise<any>>ret).then) {
             return <Promise<any>>ret
           } else {
